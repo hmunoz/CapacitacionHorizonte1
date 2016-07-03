@@ -17,6 +17,11 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -34,6 +39,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import ar.edu.unrn.lia.capacitacionhorizonte1.R;
+import ar.edu.unrn.lia.capacitacionhorizonte1.api.VolleySingleton;
 import ar.edu.unrn.lia.capacitacionhorizonte1.image.adapter.ImagesAdapter;
 import ar.edu.unrn.lia.capacitacionhorizonte1.image.entity.Image;
 import ar.edu.unrn.lia.capacitacionhorizonte1.lib.GlideImageLoader;
@@ -46,7 +52,9 @@ import butterknife.ButterKnife;
  */
 public class ImageFragment extends Fragment  implements  OnItemClickListener {
 
-static final String TAG = "ImageFragment";
+    static final String TAG = "ImageFragment";
+
+    static final String URL_GET = "https://sizzling-heat-8971.firebaseio.com/images.json";
 
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
@@ -80,14 +88,62 @@ static final String TAG = "ImageFragment";
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
 
-        //Lista Estatica
+        //Parte 1 - Lista Estatica
         //adapter.setItems(initImageStatic());
 
-        //Lista desde Servicio Rest  AsynTask Http
-        new HttpAsyncTask().execute("https://sizzling-heat-8971.firebaseio.com/images.json");
+        //Parte 2 - Lista desde Servicio Rest  AsynTask Http
+        //new HttpAsyncTask().execute(URL_GET);
 
+        //Parte 3 - Utilizando Volley
+        volleyInitListImage();
 
         return view;
+    }
+
+
+
+    public  void volleyInitListImage(){
+
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                (Request.Method.GET, URL_GET, null, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject json) {
+                        //mTxtDisplay.setText("Response: " + response.toString());
+                        List<Image> images = new ArrayList<Image>(0);
+                        Iterator<String> iter = json.keys();
+                        while (iter.hasNext()) {
+                            String key = iter.next();
+                            try {
+                                Image image = new Image();
+                                JSONObject jsonObject = (JSONObject) json.get(key);
+                                image.setText(jsonObject.get("text").toString());
+                                image.setImageURL(jsonObject.get("imageURL").toString());
+                                image.setSourceURL(jsonObject.get("sourceURL").toString());
+
+                                images.add(image);
+
+
+                            } catch (JSONException e) {
+                                Log.d(TAG, e.getLocalizedMessage());
+                            }
+                        }
+                        adapter.setItems(images);
+                        hideProgressBar();
+
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO Auto-generated method stub
+
+                    }
+                });
+
+        showProgressBar();
+        // Access the RequestQueue through your singleton class.
+        VolleySingleton.getInstance(getContext()).addToRequestQueue(jsObjRequest);
     }
 
     @Override
