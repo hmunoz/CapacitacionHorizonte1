@@ -1,6 +1,8 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 
+def dbflow_version = "3.0.1"
+
 android {
     compileSdkVersion 24
     buildToolsVersion "24.0.0"
@@ -35,7 +37,21 @@ dependencies {
     apt 'com.jakewharton:butterknife-compiler:8.1.0'
 
 
+    //Rest APIs
     compile 'com.android.volley:volley:1.0.0'
+
+    //Retrofit
+    compile 'com.google.code.gson:gson:2.6.2'
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+    provided 'org.glassfish:javax.annotation:10.0-b28'
+
+
+    //Sqlite ORM
+    apt "com.github.Raizlabs.DBFlow:dbflow-processor:${dbflow_version}"
+    // use kapt for kotlin apt
+    compile "com.github.Raizlabs.DBFlow:dbflow-core:${dbflow_version}"
+    compile "com.github.Raizlabs.DBFlow:dbflow:${dbflow_version}"
 
 
 

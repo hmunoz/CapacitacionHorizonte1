@@ -1,18 +1,44 @@
 package ar.edu.unrn.lia.capacitacionhorizonte1.store;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
+
+import com.raizlabs.android.dbflow.sql.language.Select;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import ar.edu.unrn.lia.capacitacionhorizonte1.R;
+import ar.edu.unrn.lia.capacitacionhorizonte1.entities.ImageEntity;
+import ar.edu.unrn.lia.capacitacionhorizonte1.image.adapter.ImagesAdapter;
+import ar.edu.unrn.lia.capacitacionhorizonte1.image.entity.Image;
+import ar.edu.unrn.lia.capacitacionhorizonte1.image.ui.OnItemClickListener;
+import ar.edu.unrn.lia.capacitacionhorizonte1.lib.GlideImageLoader;
+import ar.edu.unrn.lia.capacitacionhorizonte1.lib.ImageLoader;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 
-public class StoreFragment extends Fragment {
+public class StoreFragment extends Fragment implements OnItemClickListener {
 
+
+    @BindView(R.id.recyclerView)
+    RecyclerView recyclerView;
+    @BindView(R.id.progressBar)
+    ProgressBar progressBar;
+    @BindView(R.id.container)
+    FrameLayout container;
+
+
+    ImagesAdapter adapter;
+    ImageLoader imageLoader;
 
     public StoreFragment() {
         // Required empty public constructor
@@ -23,7 +49,39 @@ public class StoreFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_store, container, false);
+        View view = inflater.inflate(R.layout.fragment_image, container, false);
+        ButterKnife.bind(this, view);
+
+
+        imageLoader = new GlideImageLoader(this);
+
+
+        adapter = new ImagesAdapter(this,imageLoader);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 1));
+
+
+
+        //Parte 5 - Load from Sqlite
+        dbInitListImage();
+
+        return view;
     }
+
+    private void dbInitListImage() {
+        List<ImageEntity> lista = new Select().from(ImageEntity.class).queryList();
+        List<Image> resultado = new ArrayList<Image>(0);
+        for (ImageEntity item:lista) {
+            resultado.add(new Image(item.getText(),item.getImageURL(),item.getSourceURL()));
+        }
+        adapter.setItems(resultado);
+    }
+
+    @Override
+    public void onItemClick(Image tweet) {
+
+    }
+
+
 
 }

@@ -21,6 +21,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.gson.JsonObject;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -37,20 +38,27 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import ar.edu.unrn.lia.capacitacionhorizonte1.R;
+import ar.edu.unrn.lia.capacitacionhorizonte1.api.ImageApiEndpointInterface;
+import ar.edu.unrn.lia.capacitacionhorizonte1.api.ImageClient;
+import ar.edu.unrn.lia.capacitacionhorizonte1.api.ImageResponse;
 import ar.edu.unrn.lia.capacitacionhorizonte1.api.VolleySingleton;
+import ar.edu.unrn.lia.capacitacionhorizonte1.entities.ImageEntity;
 import ar.edu.unrn.lia.capacitacionhorizonte1.image.adapter.ImagesAdapter;
 import ar.edu.unrn.lia.capacitacionhorizonte1.image.entity.Image;
 import ar.edu.unrn.lia.capacitacionhorizonte1.lib.GlideImageLoader;
 import ar.edu.unrn.lia.capacitacionhorizonte1.lib.ImageLoader;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ImageFragment extends Fragment  implements  OnItemClickListener {
+public class ImageFragment extends Fragment  implements  OnItemClickListener,Callback<JsonObject> {
 
     static final String TAG = "ImageFragment";
 
@@ -67,6 +75,8 @@ public class ImageFragment extends Fragment  implements  OnItemClickListener {
     ImagesAdapter adapter;
     ImageLoader imageLoader;
 
+    ImageApiEndpointInterface imageApiEndpointInterface;
+
 
     public ImageFragment() {
         // Required empty public constructor
@@ -80,6 +90,7 @@ public class ImageFragment extends Fragment  implements  OnItemClickListener {
          View view = inflater.inflate(R.layout.fragment_image, container, false);
         ButterKnife.bind(this, view);
 
+        imageApiEndpointInterface = new ImageClient().getImageService();
 
         imageLoader = new GlideImageLoader(this);
 
@@ -95,63 +106,28 @@ public class ImageFragment extends Fragment  implements  OnItemClickListener {
         //new HttpAsyncTask().execute(URL_GET);
 
         //Parte 3 - Utilizando Volley
-        volleyInitListImage();
+        //volleyInitListImage();
+
+
+        //Parte 4 - Retrofit 2.0
+        retrofiInitListImage();
 
         return view;
     }
 
 
 
-    public  void volleyInitListImage(){
-
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                (Request.Method.GET, URL_GET, null, new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject json) {
-                        //mTxtDisplay.setText("Response: " + response.toString());
-                        List<Image> images = new ArrayList<Image>(0);
-                        Iterator<String> iter = json.keys();
-                        while (iter.hasNext()) {
-                            String key = iter.next();
-                            try {
-                                Image image = new Image();
-                                JSONObject jsonObject = (JSONObject) json.get(key);
-                                image.setText(jsonObject.get("text").toString());
-                                image.setImageURL(jsonObject.get("imageURL").toString());
-                                image.setSourceURL(jsonObject.get("sourceURL").toString());
-
-                                images.add(image);
-
-
-                            } catch (JSONException e) {
-                                Log.d(TAG, e.getLocalizedMessage());
-                            }
-                        }
-                        adapter.setItems(images);
-                        hideProgressBar();
-
-                    }
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // TODO Auto-generated method stub
-
-                    }
-                });
-
-        showProgressBar();
-        // Access the RequestQueue through your singleton class.
-        VolleySingleton.getInstance(getContext()).addToRequestQueue(jsObjRequest);
-    }
 
     @Override
-    public void onItemClick(Image tweet) {
-        String textInfo = String.format(getString(R.string.info_navegate_url),tweet.getSourceURL());
+    public void onItemClick(Image image) {
+        String textInfo = String.format(getString(R.string.info_navegate_url),image.getSourceURL());
         Snackbar.make(container,textInfo,Snackbar.LENGTH_SHORT).show();
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(tweet.getSourceURL()));
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(image.getSourceURL()));
         startActivity(intent);
+
+        //Persistir
+        ImageEntity imageEntity = new ImageEntity(image.getText(),image.getImageURL(),image.getSourceURL());
+        imageEntity.save();
     }
 
 
@@ -273,4 +249,100 @@ public class ImageFragment extends Fragment  implements  OnItemClickListener {
         return result;
 
     }
+
+
+    public  void volleyInitListImage(){
+
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                (Request.Method.GET, URL_GET, null, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject json) {
+                        //mTxtDisplay.setText("Response: " + response.toString());
+                        List<Image> images = new ArrayList<Image>(0);
+                        Iterator<String> iter = json.keys();
+                        while (iter.hasNext()) {
+                            String key = iter.next();
+                            try {
+                                Image image = new Image();
+                                JSONObject jsonObject = (JSONObject) json.get(key);
+                                image.setText(jsonObject.get("text").toString());
+                                image.setImageURL(jsonObject.get("imageURL").toString());
+                                image.setSourceURL(jsonObject.get("sourceURL").toString());
+
+                                images.add(image);
+
+
+                            } catch (JSONException e) {
+                                Log.d(TAG, e.getLocalizedMessage());
+                            }
+                        }
+                        adapter.setItems(images);
+                        hideProgressBar();
+
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO Auto-generated method stub
+
+                    }
+                });
+
+        showProgressBar();
+        // Access the RequestQueue through your singleton class.
+        VolleySingleton.getInstance(getContext()).addToRequestQueue(jsObjRequest);
+    }
+
+
+
+    private void retrofiInitListImage() {
+        showProgressBar();
+        Call<JsonObject> call = imageApiEndpointInterface.getImages();
+        call.enqueue(this);
+    }
+
+
+
+    @Override
+    public void onResponse(Call<JsonObject> call, retrofit2.Response<JsonObject> response) {
+        List<Image> images = new ArrayList<Image>(0);
+        if (response.isSuccessful()) {
+            JSONObject json = null;
+            try {
+                json = new JSONObject(response.body().toString());
+
+
+                Iterator<String> iter = json.keys();
+                while (iter.hasNext()) {
+                    String key = iter.next();
+
+                    Image image = new Image();
+                    JSONObject jsonObject = (JSONObject) json.get(key);
+                    image.setText(jsonObject.get("text").toString());
+                    image.setImageURL(jsonObject.get("imageURL").toString());
+                    image.setSourceURL(jsonObject.get("sourceURL").toString());
+
+                    images.add(image);
+
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            adapter.setItems(images);
+            hideProgressBar();
+
+        } else {
+            Log.d(TAG,response.message());
+        }
+    }
+
+    @Override
+    public void onFailure(Call<JsonObject> call, Throwable t) {
+        Log.d(TAG,t.getLocalizedMessage());
+    }
+
 }
