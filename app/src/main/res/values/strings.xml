@@ -1,4 +1,16 @@
 <resources>
     <string name="app_name">Capacitacion Horizonte 1</string>
     <string name="action_settings">Settings</string>
+    <string name="wellcome">Hello World!</string>
+    <string name="login.mensage.email">Ingrese Email...</string>
+    <string name="login.mensage.password">Ingrese Clave...</string>
+    <string name="login.btn.singin">Login</string>
+    <string name="login.btn.singup">Crear Usuario</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="main_header_images">Imagenes</string>
+    <string name="main_header_store">Almacenadas</string>
+    <string name="info_navegate_url">Esta saliendo a %s</string>
 </resources>
