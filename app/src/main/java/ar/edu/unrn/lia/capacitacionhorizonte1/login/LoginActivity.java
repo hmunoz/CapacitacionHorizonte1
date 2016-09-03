@@ -85,14 +85,56 @@ public class LoginActivity extends AppCompatActivity {
                 break;
             case R.id.btnSingup:
 
-                Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
-                etPassword.startAnimation(shake);
+                loginError("Usuario y/o clave Invalidos");
 
                 Log.i(TAG, "btnSingup: Error Login.");
                 break;
         }
     }
 
+
+
+
+    public void showProgress() {
+        progressbar.setVisibility(View.VISIBLE);
+    }
+
+
+    public void hideProgress() {
+        progressbar.setVisibility(View.GONE);
+    }
+
+
+    public void disableInputs() {
+        setInputs(false);
+    }
+
+
+    public void enableInputs() {
+        setInputs(true);
+    }
+
+    private void setInputs(boolean enabled){
+        btnSingup.setEnabled(enabled);
+        btnSingin.setEnabled(enabled);
+        etEmal.setEnabled(enabled);
+        etPassword.setEnabled(enabled);
+    }
+
+
+    public void loginError(String error) {
+
+        etPassword.setText("");
+        String msgError = String.format(getString(R.string.login_error_message_signin), error);
+        etPassword.setError(msgError);
+
+        Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
+        etPassword.startAnimation(shake);
+    }
+
+    public void navigateToMainScreen() {
+        startActivity(new Intent(this, MainActivity.class));
+    }
 
     private class LoginProgressBarShowHide extends AsyncTask<Void, Void, Void> {
 
@@ -108,15 +150,17 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void result) {
-            progressbar.setVisibility(View.GONE);
-            startActivity(new Intent(LoginActivity.this , MainActivity.class));
+            hideProgress();
+            setInputs(true);
+            navigateToMainScreen();
             super.onPostExecute(result);
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressbar.setVisibility(View.VISIBLE);
+            showProgress();
+            setInputs(false);
 
         }
     }

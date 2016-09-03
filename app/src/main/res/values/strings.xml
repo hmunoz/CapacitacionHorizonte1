@@ -13,4 +13,5 @@
     <string name="main_header_images">Imagenes</string>
     <string name="main_header_store">Almacenadas</string>
     <string name="info_navegate_url">Esta saliendo a %s</string>
+    <string name="login_error_message_signin">Login: %s</string>
 </resources>
