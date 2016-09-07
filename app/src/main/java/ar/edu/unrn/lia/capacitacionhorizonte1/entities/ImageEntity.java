@@ -3,14 +3,9 @@ package ar.edu.unrn.lia.capacitacionhorizonte1.entities;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
-import com.raizlabs.android.dbflow.annotation.Unique;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import ar.edu.unrn.lia.capacitacionhorizonte1.api.AppDatabase;
-
-/**
- * Created by horaciomunoz on 3/7/16.
- */
 
 @Table(database = AppDatabase.class)
 public class ImageEntity extends BaseModel {
@@ -19,7 +14,6 @@ public class ImageEntity extends BaseModel {
     long id;
 
     @Column
-    @Unique
     String text;
 
     @Column

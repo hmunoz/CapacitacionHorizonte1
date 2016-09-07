@@ -23,6 +23,9 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.container)
     ViewPager viewPager;
 
+    ImageFragment imageFragment;
+    StoreFragment storeFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,7 +34,20 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Fragment[] fragments = new Fragment[] {new ImageFragment(), new StoreFragment()};
+
+        imageFragment = new ImageFragment();
+        storeFragment = new StoreFragment();
+
+
+        imageFragment.setChangeListener(new ImageFragment.ChangeListener() {
+            @Override
+            public void onChange() {
+                storeFragment.updateList();
+            }
+        });
+
+
+        Fragment[] fragments = new Fragment[] {imageFragment, storeFragment};
 
         String[] titles = new String[] {getString(R.string.main_header_images), getString(R.string.main_header_store)};
 

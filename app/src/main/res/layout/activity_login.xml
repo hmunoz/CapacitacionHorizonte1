@@ -15,7 +15,6 @@
         android:layout_alignParentTop="true"
         android:layout_alignRight="@+id/wpPassword"
         android:layout_marginTop="@dimen/margin_top">
-
         <EditText
             android:id="@+id/etEmal"
             android:layout_width="wrap_content"
@@ -59,7 +58,7 @@
             android:id="@+id/btnSingup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/login.btn.singup" />
+            android:text="@string/btn.cancel" />
     </LinearLayout>
 
     <ProgressBar

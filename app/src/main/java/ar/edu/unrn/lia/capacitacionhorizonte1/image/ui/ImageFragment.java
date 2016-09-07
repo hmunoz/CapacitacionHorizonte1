@@ -9,7 +9,9 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,6 +62,16 @@ import retrofit2.Callback;
  */
 public class ImageFragment extends Fragment  implements  OnItemClickListener,Callback<JsonObject> {
 
+
+    ChangeListener listener;
+
+    public interface ChangeListener {
+        public void onChange();
+    }
+    public void setChangeListener(ChangeListener listener) {
+        this.listener = listener;
+    }
+
     static final String TAG = "ImageFragment";
 
     static final String URL_GET = "https://sizzling-heat-8971.firebaseio.com/images.json";
@@ -99,8 +111,10 @@ public class ImageFragment extends Fragment  implements  OnItemClickListener,Cal
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
 
+       // LinearLayoutManager llm = new LinearLayoutManager(getActivity());//recyclerView.setLayoutManager(new StaggeredGridLayoutManager(3, 1));
+
         //Parte 1 - Lista Estatica
-        //adapter.setItems(initImageStatic());
+        adapter.setItems(initImageStatic());
 
         //Parte 2 - Lista desde Servicio Rest  AsynTask Http
         //new HttpAsyncTask().execute(URL_GET);
@@ -110,7 +124,7 @@ public class ImageFragment extends Fragment  implements  OnItemClickListener,Cal
 
 
         //Parte 4 - Retrofit 2.0
-        retrofiInitListImage();
+        //retrofiInitListImage();
 
         return view;
     }
@@ -128,6 +142,8 @@ public class ImageFragment extends Fragment  implements  OnItemClickListener,Cal
         //Persistir
         ImageEntity imageEntity = new ImageEntity(image.getText(),image.getImageURL(),image.getSourceURL());
         imageEntity.save();
+        //Notifica al Frgment Dos
+        listener.onChange();
     }
 
 

@@ -72,6 +72,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ViewHolder
                     listener.onItemClick(image);
                 }
             });
+
         }
     }
 }

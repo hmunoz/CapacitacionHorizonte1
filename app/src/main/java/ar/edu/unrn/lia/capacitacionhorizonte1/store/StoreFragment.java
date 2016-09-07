@@ -82,6 +82,8 @@ public class StoreFragment extends Fragment implements OnItemClickListener {
 
     }
 
-
+    public void updateList() {
+        dbInitListImage();
+    }
 
 }
