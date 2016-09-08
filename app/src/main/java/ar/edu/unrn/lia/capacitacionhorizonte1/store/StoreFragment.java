@@ -72,7 +72,7 @@ public class StoreFragment extends Fragment implements OnItemClickListener {
         List<ImageEntity> lista = new Select().from(ImageEntity.class).queryList();
         List<Image> resultado = new ArrayList<Image>(0);
         for (ImageEntity item:lista) {
-            resultado.add(new Image(item.getText(),item.getImageURL(),item.getSourceURL()));
+            resultado.add(new Image(item.getImageURL(),item.getText(),item.getSourceURL()));
         }
         adapter.setItems(resultado);
     }
