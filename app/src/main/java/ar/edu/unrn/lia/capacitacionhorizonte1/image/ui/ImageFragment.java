@@ -151,12 +151,12 @@ public class ImageFragment extends Fragment implements OnItemClickListener, Call
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(image.getSourceURL()));
         startActivity(intent);
 
-        //Select where
+        //Select where- Consulta para ubicar al elemento seleccionado en la DB
         List<ImageEntity> lista = new Select().
                 from(ImageEntity.class).
                 where(ImageEntity_Table.text.eq(image.getText())).
                 queryList();
-
+//Si el elemento no esta en la base lo persisto
         if (lista.size()==0){
             //Persistir
             ImageEntity imageEntity = new ImageEntity(image.getText(),

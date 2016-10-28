@@ -78,7 +78,7 @@ public class StoreFragment extends Fragment implements OnItemClickListener {
     }
 
     @Override
-    public void onItemClick(Image tweet) {
+    public void onItemClick(Image image) {
 
     }
 
