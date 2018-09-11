@@ -39,7 +39,7 @@ import ar.edu.unrn.lia.capacitacionhorizonte1.R;
 import ar.edu.unrn.lia.capacitacionhorizonte1.api.ImageApiEndpointInterface;
 import ar.edu.unrn.lia.capacitacionhorizonte1.api.ImageClient;
 import ar.edu.unrn.lia.capacitacionhorizonte1.api.VolleySingleton;
-import ar.edu.unrn.lia.capacitacionhorizonte1.dao.AppDatabase;
+import ar.edu.unrn.lia.capacitacionhorizonte1.api.AppDatabase;
 import ar.edu.unrn.lia.capacitacionhorizonte1.dao.ImageDao;
 import ar.edu.unrn.lia.capacitacionhorizonte1.entities.ImageEntity;
 import ar.edu.unrn.lia.capacitacionhorizonte1.image.adapter.ImagesAdapter;

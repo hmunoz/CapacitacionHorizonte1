@@ -1,10 +1,11 @@
-package ar.edu.unrn.lia.capacitacionhorizonte1.dao;
+package ar.edu.unrn.lia.capacitacionhorizonte1.api;
 
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 
+import ar.edu.unrn.lia.capacitacionhorizonte1.dao.ImageDao;
 import ar.edu.unrn.lia.capacitacionhorizonte1.entities.ImageEntity;
 
 @Database(entities = {ImageEntity.class}, version = 1)
