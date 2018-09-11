@@ -12,6 +12,7 @@ import ar.edu.unrn.lia.capacitacionhorizonte1.entities.ImageEntity;
 
 @Dao
 public interface ImageDao {
+
     @Query("SELECT * FROM imageentity")
     List<ImageEntity> getAll();
 
