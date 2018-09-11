@@ -1,25 +1,25 @@
 package ar.edu.unrn.lia.capacitacionhorizonte1.entities;
 
-import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.PrimaryKey;
-import com.raizlabs.android.dbflow.annotation.Table;
-import com.raizlabs.android.dbflow.structure.BaseModel;
 
-import ar.edu.unrn.lia.capacitacionhorizonte1.api.AppDatabase;
 
-@Table(database = AppDatabase.class)
-public class ImageEntity extends BaseModel {
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
 
-    @PrimaryKey(autoincrement = true)
+
+@Entity
+public class ImageEntity  {
+
+    @PrimaryKey(autoGenerate = true)
     long id;
 
-    @Column
+    @ColumnInfo
     String text;
 
-    @Column
+    @ColumnInfo
     String imageURL;
 
-    @Column
+    @ColumnInfo
     String sourceURL;
 
     public long getId() {
@@ -58,8 +58,5 @@ public class ImageEntity extends BaseModel {
         this.text = text;
         this.imageURL = imageURL;
         this.sourceURL = sourceURL;
-    }
-
-    public ImageEntity() {
     }
 }

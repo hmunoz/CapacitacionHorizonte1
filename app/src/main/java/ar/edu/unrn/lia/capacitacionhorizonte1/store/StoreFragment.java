@@ -9,13 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
-
-import com.raizlabs.android.dbflow.sql.language.Select;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import ar.edu.unrn.lia.capacitacionhorizonte1.R;
+import ar.edu.unrn.lia.capacitacionhorizonte1.dao.AppDatabase;
+import ar.edu.unrn.lia.capacitacionhorizonte1.dao.ImageDao;
 import ar.edu.unrn.lia.capacitacionhorizonte1.entities.ImageEntity;
 import ar.edu.unrn.lia.capacitacionhorizonte1.image.adapter.ImagesAdapter;
 import ar.edu.unrn.lia.capacitacionhorizonte1.image.entity.Image;
@@ -39,6 +38,7 @@ public class StoreFragment extends Fragment implements OnItemClickListener {
 
     ImagesAdapter adapter;
     ImageLoader imageLoader;
+    ImageDao imageDao;
 
     public StoreFragment() {
         // Required empty public constructor
@@ -52,6 +52,10 @@ public class StoreFragment extends Fragment implements OnItemClickListener {
         View view = inflater.inflate(R.layout.fragment_image, container, false);
         ButterKnife.bind(this, view);
 
+
+        //ROOM DAO
+        AppDatabase database = AppDatabase.getDatabase(getContext());
+        imageDao = database.imageDao();
 
         imageLoader = new GlideImageLoader(this);
 
@@ -69,7 +73,7 @@ public class StoreFragment extends Fragment implements OnItemClickListener {
     }
 
     private void dbInitListImage() {
-        List<ImageEntity> lista = new Select().from(ImageEntity.class).queryList();
+        List<ImageEntity> lista = imageDao.getAll();
         List<Image> resultado = new ArrayList<Image>(0);
         for (ImageEntity item:lista) {
             resultado.add(new Image(item.getImageURL(),item.getText(),item.getSourceURL()));

@@ -17,22 +17,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
-
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.gson.JsonObject;
-import com.raizlabs.android.dbflow.sql.language.Condition;
-import com.raizlabs.android.dbflow.sql.language.Select;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,13 +35,13 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import ar.edu.unrn.lia.capacitacionhorizonte1.R;
 import ar.edu.unrn.lia.capacitacionhorizonte1.api.ImageApiEndpointInterface;
 import ar.edu.unrn.lia.capacitacionhorizonte1.api.ImageClient;
 import ar.edu.unrn.lia.capacitacionhorizonte1.api.VolleySingleton;
+import ar.edu.unrn.lia.capacitacionhorizonte1.dao.AppDatabase;
+import ar.edu.unrn.lia.capacitacionhorizonte1.dao.ImageDao;
 import ar.edu.unrn.lia.capacitacionhorizonte1.entities.ImageEntity;
-import ar.edu.unrn.lia.capacitacionhorizonte1.entities.ImageEntity_Table;
 import ar.edu.unrn.lia.capacitacionhorizonte1.image.adapter.ImagesAdapter;
 import ar.edu.unrn.lia.capacitacionhorizonte1.image.entity.Image;
 import ar.edu.unrn.lia.capacitacionhorizonte1.lib.GlideImageLoader;
@@ -90,7 +85,7 @@ public class ImageFragment extends Fragment implements OnItemClickListener, Call
     ImageLoader imageLoader;
 
     ImageApiEndpointInterface imageApiEndpointInterface;
-
+    ImageDao imageDao;
 
     public ImageFragment() {
         // Required empty public constructor
@@ -103,6 +98,10 @@ public class ImageFragment extends Fragment implements OnItemClickListener, Call
 
         View view = inflater.inflate(R.layout.fragment_image, container, false);
         ButterKnife.bind(this, view);
+
+        //ROOM DAO
+        AppDatabase database = AppDatabase.getDatabase(getContext());
+        imageDao = database.imageDao();
 
         imageApiEndpointInterface = new ImageClient().getImageService();
 
@@ -152,17 +151,16 @@ public class ImageFragment extends Fragment implements OnItemClickListener, Call
         startActivity(intent);
 
         //Select where- Consulta para ubicar al elemento seleccionado en la DB
-        List<ImageEntity> lista = new Select().
-                from(ImageEntity.class).
-                where(ImageEntity_Table.text.eq(image.getText())).
-                queryList();
-//Si el elemento no esta en la base lo persisto
+        List<ImageEntity> lista = imageDao.getImageEntityByText(image.getText());
+        //Si el elemento no esta en la base lo persisto
         if (lista.size()==0){
             //Persistir
             ImageEntity imageEntity = new ImageEntity(image.getText(),
                     image.getImageURL(),
                     image.getSourceURL());
-            imageEntity.save();
+
+
+            imageDao.insertAll(imageEntity);
 
             //Notifica al Frgment Dos
             listener.onChange();
