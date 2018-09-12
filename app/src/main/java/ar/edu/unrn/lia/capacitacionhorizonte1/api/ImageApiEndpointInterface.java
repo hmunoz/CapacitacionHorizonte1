@@ -2,6 +2,8 @@ package ar.edu.unrn.lia.capacitacionhorizonte1.api;
 
 import com.google.gson.JsonObject;
 
+import java.util.HashMap;
+
 import ar.edu.unrn.lia.capacitacionhorizonte1.image.entity.Image;
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -12,5 +14,5 @@ import retrofit2.http.GET;
 
 public interface ImageApiEndpointInterface {
     @GET("images.json")
-    Call<JsonObject> getImages();
+    Call<HashMap<String, Image>> getImages();
 }

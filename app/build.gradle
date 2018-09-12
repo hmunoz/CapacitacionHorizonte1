@@ -42,9 +42,9 @@ dependencies {
     implementation 'com.android.volley:volley:1.0.0'
 
     //Retrofit
-    implementation 'com.google.code.gson:gson:2.6.2'
-    implementation 'com.squareup.retrofit2:retrofit:2.1.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
+    implementation 'com.google.code.gson:gson:2.8.1'
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
     compileOnly 'org.glassfish:javax.annotation:10.0-b28'
 
 
@@ -61,4 +61,7 @@ dependencies {
     })
     implementation "com.android.support:support-v4:$android_support_version"
     androidTestImplementation 'junit:junit:4.12'
+
+
+    implementation 'com.auth0.android:jwtdecode:1.1.1'
 }

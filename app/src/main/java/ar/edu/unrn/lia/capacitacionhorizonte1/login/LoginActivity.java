@@ -12,12 +12,26 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+
+import com.auth0.android.jwt.JWT;
+
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import ar.edu.unrn.lia.capacitacionhorizonte1.R;
+import ar.edu.unrn.lia.capacitacionhorizonte1.api.ImageApiEndpointInterface;
+import ar.edu.unrn.lia.capacitacionhorizonte1.api.ImageClient;
+import ar.edu.unrn.lia.capacitacionhorizonte1.api.login.Authorization;
+import ar.edu.unrn.lia.capacitacionhorizonte1.api.login.LoginApiEndpointInterface;
+import ar.edu.unrn.lia.capacitacionhorizonte1.api.login.LoginClient;
+import ar.edu.unrn.lia.capacitacionhorizonte1.entities.LoginBody;
 import ar.edu.unrn.lia.capacitacionhorizonte1.main.MainActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -37,13 +51,51 @@ public class LoginActivity extends AppCompatActivity {
     RelativeLayout activityMain;
 
 
+    LoginApiEndpointInterface loginApiEndpointInterface;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
         Log.i(TAG, "onCreate");
+
+        loginApiEndpointInterface = new LoginClient().getLoginService();
     }
+
+
+    private void loginService(String email, String password) {
+
+
+        showProgress();
+        setInputs(false);
+
+        Call<Authorization> call = loginApiEndpointInterface.login(new LoginBody(email,password));
+        call.enqueue(new Callback<Authorization>() {
+            @Override
+            public void onResponse(Call<Authorization> call, Response<Authorization> response) {
+
+                if (response.isSuccessful()){
+                    JWT jwt = new JWT(response.body().getToken());
+                    List<String> fxs = jwt.getClaim("fxs").asList(String.class);
+                    Log.d("FXS", fxs.toString());
+                    navigateToMainScreen();
+                }else {
+                   Log.d(TAG, "Login Error" +  response.code());
+                }
+
+                hideProgress();
+                setInputs(true);
+            }
+
+            @Override
+            public void onFailure(Call<Authorization> call, Throwable t) {
+                Log.d("TEST", call.toString());
+                hideProgress();
+                setInputs(true);
+            }
+        });
+    }
+
 
     @Override
     protected void onStart() {
@@ -80,8 +132,8 @@ public class LoginActivity extends AppCompatActivity {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btnSingin:
-                new LoginProgressBarShowHide().execute();
-                Log.i(TAG, "btnSingin. OK");
+                //new LoginProgressBarShowHide().execute();
+                loginService(etEmal.getText().toString(), etPassword.getText().toString());
                 break;
             case R.id.btnSingup:
 
@@ -142,6 +194,7 @@ public class LoginActivity extends AppCompatActivity {
         protected Void doInBackground(Void... args) {
             try {
                 TimeUnit.SECONDS.sleep(3);
+
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

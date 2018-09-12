@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import ar.edu.unrn.lia.capacitacionhorizonte1.R;
@@ -54,7 +55,7 @@ import retrofit2.Callback;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ImageFragment extends Fragment implements OnItemClickListener, Callback<JsonObject> {
+public class ImageFragment extends Fragment implements OnItemClickListener, Callback<HashMap<String, Image>> {
 
 
     ChangeListener listener;
@@ -334,37 +335,18 @@ public class ImageFragment extends Fragment implements OnItemClickListener, Call
 
     private void retrofiInitListImage() {
         showProgressBar();
-        Call<JsonObject> call = imageApiEndpointInterface.getImages();
+        Call<HashMap<String, Image>> call = imageApiEndpointInterface.getImages();
         call.enqueue(this);
     }
 
 
     @Override
-    public void onResponse(Call<JsonObject> call, retrofit2.Response<JsonObject> response) {
-        List<Image> images = new ArrayList<Image>(0);
+    public void onResponse(Call<HashMap<String, Image>> call, retrofit2.Response<HashMap<String, Image>> response) {
+        List<Image> images = new ArrayList<>(0);
         if (response.isSuccessful()) {
-            JSONObject json = null;
-            try {
-                json = new JSONObject(response.body().toString());
 
-
-                Iterator<String> iter = json.keys();
-                while (iter.hasNext()) {
-                    String key = iter.next();
-
-                    Image image = new Image();
-                    JSONObject jsonObject = (JSONObject) json.get(key);
-                    image.setText(jsonObject.get("text").toString());
-                    image.setImageURL(jsonObject.get("imageURL").toString());
-                    image.setSourceURL(jsonObject.get("sourceURL").toString());
-
-                    images.add(image);
-
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            //HashMap key/Image
+            images.addAll(response.body().values());
 
             adapter.setItems(images);
             hideProgressBar();
@@ -377,7 +359,7 @@ public class ImageFragment extends Fragment implements OnItemClickListener, Call
     }
 
     @Override
-    public void onFailure(Call<JsonObject> call, Throwable t) {
+    public void onFailure(Call<HashMap<String, Image>> call, Throwable t) {
         Log.d(TAG, t.getLocalizedMessage());
     }
 
